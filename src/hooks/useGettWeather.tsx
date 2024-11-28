@@ -3,6 +3,7 @@ import Geolocation from '@react-native-community/geolocation'
 import { Alert, Linking } from 'react-native'
 import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions'
 import Config from 'react-native-config'
+import { useFocusEffect } from '@react-navigation/native'
 type Position = {
   latitude: number
   longitude: number
