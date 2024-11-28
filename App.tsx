@@ -1,23 +1,23 @@
-import React, { useState } from 'react'
-import { NavigationContainer } from '@react-navigation/native'
+import React, { useCallback, useEffect, useState } from 'react'
+import { NavigationContainer, useFocusEffect } from '@react-navigation/native'
 import Tabs from './src/navigation/Tabs'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
-import { PERMISSIONS } from 'react-native-permissions'
+import useGetWeather from './src/hooks/useGettWeather'
 
 const App = () => {
-  const [loading, setLoading] = useState<boolean>(false)
-  console.log('laksh', PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
-  if (loading) {
+  // api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
+  const { loading, position, weather } = useGetWeather()
+  if (weather && weather.list) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size={'large'} color={'blue'} />
-      </View>
+      <NavigationContainer>
+        <Tabs weather={weather} />
+      </NavigationContainer>
     )
   }
   return (
-    <NavigationContainer>
-      <Tabs />
-    </NavigationContainer>
+    <View style={styles.container}>
+      <ActivityIndicator size={'large'} color={'blue'} />
+    </View>
   )
 }
 const styles = StyleSheet.create({

@@ -49,8 +49,25 @@ const DATA = [
     ]
   }
 ]
-
-const UpcomingWeather = () => {
+type UpcomingWeatherProps = {
+  weatherData: {
+    dt_txt: string
+    main: {
+      temp: number
+      feels_like: number
+      temp_min: number
+      temp_max: number
+    }
+    weather: {
+      description: string
+      icon: string
+      id: number
+      main: string
+    }
+  }[]
+}
+const UpcomingWeather: React.FC<UpcomingWeatherProps> = ({ weatherData }) => {
+  console.log('weather', weatherData)
   const { container, image } = styles
   const renderItem = ({ item }) => (
     <ListItem
@@ -69,7 +86,7 @@ const UpcomingWeather = () => {
       >
         <Text>UpcomingWeather</Text>
         <FlatList
-          data={DATA}
+          data={weatherData}
           renderItem={renderItem}
           keyExtractor={(item) => item.dt_txt}
         />

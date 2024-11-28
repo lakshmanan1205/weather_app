@@ -6,7 +6,26 @@ import CurrentWeather from '../screens/CurrentWeather'
 import UpcomingWeather from '../screens/UpcomingWeather'
 import City from '../screens/City'
 
-const Tabs = () => {
+type TabProps = {
+  weather: {
+    city: object
+    list: {
+      main: {
+        temp: number
+        feels_like: number
+        temp_min: number
+        temp_max: number
+      }
+      weather: {
+        description: string
+        icon: string
+        id: number
+        main: string
+      }[]
+    }[]
+  }
+}
+const Tabs: React.FC<TabProps> = ({ weather }) => {
   const Tab = createBottomTabNavigator()
 
   return (
@@ -31,7 +50,7 @@ const Tabs = () => {
     >
       <Tab.Screen
         name={'Current'}
-        component={CurrentWeather}
+        // component={CurrentWeather}
         options={{
           tabBarIcon: ({ focused }) => (
             <Feather
@@ -41,10 +60,12 @@ const Tabs = () => {
             />
           )
         }}
-      />
+      >
+        {() => <CurrentWeather weatherData={weather?.list[0]} />}
+      </Tab.Screen>
       <Tab.Screen
         name={'Upcoming'}
-        component={UpcomingWeather}
+        // component={UpcomingWeather}
         options={{
           tabBarIcon: ({ focused }) => (
             <Feather
@@ -54,10 +75,12 @@ const Tabs = () => {
             />
           )
         }}
-      />
+      >
+        {() => <UpcomingWeather weatherData={weather.list} />}
+      </Tab.Screen>
       <Tab.Screen
         name={'City'}
-        component={City}
+        // component={City}
         options={{
           tabBarIcon: ({ focused }) => (
             <Feather
@@ -67,7 +90,9 @@ const Tabs = () => {
             />
           )
         }}
-      />
+      >
+        {() => <City weatherData={weather.city} />}
+      </Tab.Screen>
     </Tab.Navigator>
   )
 }

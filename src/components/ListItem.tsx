@@ -1,6 +1,8 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import { weatherType } from '../utils/weatherType'
+import moment from 'moment'
 
 type itemProps = {
   dt_txt: string
@@ -10,13 +12,19 @@ type itemProps = {
 }
 const ListItem = (props: itemProps) => {
   const { dt_txt, min, max, condition } = props
-  const { item, date, temp } = styles
+  const { item, date, temp, dateTexWrapper } = styles
+  const icon = weatherType[condition].icon || ''
   return (
     <View style={item}>
-      <Icon name="home" size={50} color={'white'} />
-      <Text style={date}>{dt_txt}</Text>
-      <Text style={temp}>{min}</Text>
-      <Text style={temp}>{max}</Text>
+      <Icon name={icon} size={50} color={'white'} />
+      <View style={dateTexWrapper}>
+        <Text style={date}>{moment(dt_txt).format('dddd')}</Text>
+        <Text style={date}>{moment(dt_txt).format('hh:mm:ss a')}</Text>
+      </View>
+
+      <Text style={temp}>{`${Math.round(min)}\u2103 / ${Math.round(
+        max
+      )}\u2103`}</Text>
     </View>
   )
 }
@@ -32,6 +40,7 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     backgroundColor: 'pink'
   },
+  dateTexWrapper: { flexDirection: 'column' },
   date: {
     color: 'white',
     fontSize: 15

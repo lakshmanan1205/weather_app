@@ -1,28 +1,37 @@
-import React, { useCallback, useState } from 'react'
-import {
-  Alert,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-  Linking
-} from 'react-native'
-import { check, PERMISSIONS, RESULTS, request } from 'react-native-permissions'
-import { useFocusEffect } from '@react-navigation/native'
-import Geolocation from '@react-native-community/geolocation'
+import React from 'react'
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import Feather from 'react-native-vector-icons/Feather'
 
 import RowText from '../components/RowText'
 import { weatherType } from '../utils/weatherType'
-type position = {
-  latitude: number
-  longitude: number
+type CurrentWeatherProps = {
+  weatherData: {
+    main: {
+      temp: number
+      feels_like: number
+      temp_min: number
+      temp_max: number
+    }
+    weather: {
+      description: string
+      icon: string
+      id: number
+      main: string
+    }[]
+  }
 }
-const CurrentWeather = () => {
+type WeatherCondition = keyof typeof weatherType
+const CurrentWeather: React.FC<CurrentWeatherProps> = ({ weatherData }) => {
+  const {
+    main: { temp, feels_like, temp_min, temp_max },
+    weather
+  } = weatherData
+  const weatherCondition: string = weather[0].main
+  console.log('asd', weatherData)
   const {
     wrapper,
     container,
-    temp,
+    tempStyles,
     feels,
     highLowWrapper,
     highLow,
@@ -30,108 +39,34 @@ const CurrentWeather = () => {
     description,
     message
   } = styles
-  const [position, setPosition] = useState<position | null>(null)
-  const openLocationSettings = () => {
-    Linking.openSettings()
-  }
-  // const openLocationSettings = () => {
-  //   Linking.openURL('app-settings:') // Will open the app settings (Android & iOS)
-  // }
-  const checkLocationPermission = () => {
-    check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
-      .then((status) => {
-        switch (status) {
-          case RESULTS.UNAVAILABLE:
-            console.log('This feature is not available on this device.')
-            break
-          case RESULTS.DENIED:
-            console.log('The permission has not been requested or was denied.')
-            request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION, {
-              title: 'Location Permission Required',
-              message:
-                'We need access to your location to provide better services.',
-              buttonPositive: 'OK',
-              buttonNegative: 'Cancel'
-            })
-              .then((res) => {
-                console.log('Location permission granted!')
-              })
-              .catch((err) => {
-                Alert.alert(
-                  'Permission denied',
-                  'You need to enable location permissions in settings.'
-                )
-              })
-            break
-          case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are allowed.')
-            break
-          case RESULTS.GRANTED:
-            console.log('The permission is granted.')
-            getCurrentPosition()
-            break
-          case RESULTS.BLOCKED:
-            console.log('The permission is blocked.')
-            break
-          default:
-            console.log('Unknown permission status:', status)
-            break
-        }
-      })
-      .catch((error) => {
-        console.error('Error checking permission:', error)
-      })
-  }
-  const getCurrentPosition = () => {
-    Geolocation.getCurrentPosition(
-      (pos) => {
-        setPosition({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude
-        })
-      },
-      (error) => {
-        if (error.code === 2) {
-          Alert.alert(
-            'Location Service Disabled',
-            'Please enable location services to use this feature.',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'Enable', onPress: openLocationSettings }
-            ]
-          )
-        }
-        console.log('JSON', JSON.stringify(error))
-      },
-      { enableHighAccuracy: true }
-    )
-  }
-
-  useFocusEffect(
-    useCallback(() => {
-      checkLocationPermission()
-    }, [])
-  )
+  const backgroundColor =
+    weatherType[weatherCondition as WeatherCondition]?.backgroundColor ||
+    weatherType['Clear'].backgroundColor
+  const icon =
+    weatherType[weatherCondition as WeatherCondition]?.icon ||
+    weatherType['Clear'].icon
+  const messageTwo =
+    weatherType[weatherCondition as WeatherCondition].message || ''
   return (
-    <SafeAreaView style={wrapper}>
+    <SafeAreaView style={[wrapper, { backgroundColor }]}>
       <View style={container}>
-        <Feather name="sun" size={50} color="black" />
-        <Text style={temp}>61</Text>
-        <Text style={feels}>Feels like 5</Text>
+        <Feather name={icon} size={50} color="white" />
+        <Text style={tempStyles}>{temp}</Text>
+        <Text style={feels}>{`Feels like ${feels_like}`}</Text>
         <RowText
           containerStyles={highLowWrapper}
           messageOneStyles={highLow}
           messageTwoStyles={highLow}
-          messageOne="High :8"
-          messageTwo="Low :6"
+          messageOne={`High : ${temp_max}`}
+          messageTwo={`Low : ${temp_min}`}
         />
       </View>
       <RowText
         containerStyles={bodyWrapper}
         messageOneStyles={description}
         messageTwoStyles={message}
-        messageOne="It's sunny"
-        messageTwo={weatherType['Thunderstorm'].message}
+        messageOne={weather[0].description}
+        messageTwo={messageTwo}
       />
     </SafeAreaView>
   )
@@ -146,7 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  temp: {
+  tempStyles: {
     color: 'black',
     fontSize: 48
   },
