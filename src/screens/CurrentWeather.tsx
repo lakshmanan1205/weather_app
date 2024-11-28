@@ -27,7 +27,6 @@ const CurrentWeather: React.FC<CurrentWeatherProps> = ({ weatherData }) => {
     weather
   } = weatherData
   const weatherCondition: string = weather[0].main
-  console.log('asd', weatherData)
   const {
     wrapper,
     container,
@@ -55,7 +54,7 @@ const CurrentWeather: React.FC<CurrentWeatherProps> = ({ weatherData }) => {
         <Text style={feels}>{`Feels like ${feels_like}`}</Text>
         <RowText
           containerStyles={highLowWrapper}
-          messageOneStyles={highLow}
+          messageOneStyles={[highLow, { marginRight: 10 }]}
           messageTwoStyles={highLow}
           messageOne={`High : ${temp_max}`}
           messageTwo={`Low : ${temp_min}`}

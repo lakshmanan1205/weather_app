@@ -49,7 +49,7 @@ const City = ({ weatherData }) => {
             bodyTextStyles={riseSetText}
           />
           <IconText
-            iconName="sunrise"
+            iconName="sunset"
             iconColor="white"
             bodyText={moment(sunset).format('h:mm:ss a')}
             bodyTextStyles={riseSetText}

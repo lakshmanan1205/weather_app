@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { NavigationContainer, useFocusEffect } from '@react-navigation/native'
 import Tabs from './src/navigation/Tabs'
-import { ActivityIndicator, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import useGetWeather from './src/hooks/useGettWeather'
 
 const App = () => {
@@ -14,9 +14,16 @@ const App = () => {
       </NavigationContainer>
     )
   }
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size={'large'} color={'blue'} />
+      </View>
+    )
+  }
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size={'large'} color={'blue'} />
+    <View>
+      <Text>Welcome</Text>
     </View>
   )
 }
